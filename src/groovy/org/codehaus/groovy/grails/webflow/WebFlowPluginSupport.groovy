@@ -21,8 +21,6 @@ import org.codehaus.groovy.grails.webflow.engine.builder.FlowBuilder
 import org.codehaus.groovy.grails.webflow.execution.GrailsFlowExecutorImpl
 import org.codehaus.groovy.grails.webflow.mvc.servlet.GrailsFlowHandlerAdapter
 import org.codehaus.groovy.grails.webflow.mvc.servlet.GrailsFlowHandlerMapping
-import org.codehaus.groovy.grails.webflow.persistence.FlowAwareCurrentSessionContext
-import org.codehaus.groovy.grails.webflow.persistence.SessionAwareHibernateFlowExecutionListener
 import org.codehaus.groovy.grails.webflow.scope.ScopeRegistrar
 import org.springframework.binding.convert.service.DefaultConversionService
 import org.springframework.context.ApplicationContext
@@ -74,24 +72,9 @@ class WebFlowPluginSupport {
         flowRegistry(FlowDefinitionRegistryImpl)
 
         flowScopeRegistrar(ScopeRegistrar)
-        boolean configureHibernateListener = manager.hasGrailsPlugin('hibernate') && springConfig.containsBean("sessionFactory")
-        if (configureHibernateListener) {
-            try {
-                hibernateConversationListener(org.codehaus.groovy.grails.webflow.persistence.SessionAwareHibernateFlowExecutionListener, sessionFactory, transactionManager)
-                executionListenerLoader(org.springframework.webflow.execution.factory.StaticFlowExecutionListenerLoader, hibernateConversationListener)
-                sessionFactory.currentSessionContextClass = org.codehaus.groovy.grails.webflow.persistence.FlowAwareCurrentSessionContext
-            }
-            catch (MissingPropertyException mpe) {
-                // no session factory, this is ok
-                log.info "Webflow loading without Hibernate integration. SessionFactory not found."
-            }
-        }
 
         flowExecutionFactory(FlowExecutionImplFactory) {
             executionAttributes = new LocalAttributeMap(alwaysRedirectOnPause:true)
-            if (configureHibernateListener) {
-                executionListenerLoader = ref("executionListenerLoader")
-            }
         }
 
         conversationManager(SessionBindingConversationManager)

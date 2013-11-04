@@ -3,8 +3,8 @@ import org.codehaus.groovy.grails.webflow.WebFlowPluginSupport
 class WebflowGrailsPlugin {
     def version = "2.0.8.1"
     def observe = ['controllers']
-    def loadAfter = ['hibernate']
     def grailsVersion = "2.2 > *"
+    def loadAfter = ['controllers']
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
     def title = "Spring Web Flow Plugin"
